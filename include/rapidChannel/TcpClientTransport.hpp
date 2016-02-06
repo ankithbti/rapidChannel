@@ -44,8 +44,8 @@ public:
 	TcpClientTransport(const std::string& ip, size_t port, bool isHBReq = false, size_t hbInterval = 30);
 	void start();
 	void stop();
-	inline void isRunning(){
-
+	inline bool isRunning(){
+	  return false;
 	}
 	void send(Buffer& buf);
 };

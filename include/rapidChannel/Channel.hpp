@@ -39,23 +39,24 @@ public:
 	 */
 	void start()
 	{
-
+	  _transport->start();
 	}
 
 	void stop()
 	{
-
+	  _transport->stop();
 	}
 
 	inline bool isAlive()
 	{
-		return false; // To Do
+		return _transport->isRunning();
 	}
 
 	void send(typename Message<ProtocolAdaptor>::SharedPtr msg){
 		Buffer buf;
 		msg->apply(*(_messageVisitor.get()), buf);
 		// Send this buf on transport
+		_transport->send(buf);
 	}
 
 };
