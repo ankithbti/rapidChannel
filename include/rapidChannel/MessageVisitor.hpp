@@ -9,7 +9,9 @@
 #define SRC_MESSAGEVISITOR_HPP_
 
 #include <rapidChannel/Common.hpp>
-#include <rapidChannel/Logon.hpp>
+#include <rapidChannel/FIXLogonMessage.hpp>
+#include <rapidChannel/FIXHeartBeatMessage.hpp>
+#include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
 
 namespace rapidChannel
 {
@@ -20,7 +22,7 @@ class MessageVisitor : private boost::noncopyable
 public:
 	typedef boost::shared_ptr<MessageVisitor<ProtocolAdaptor> > SharedPtr;
 
-	virtual void visit(LogonMessage<ProtocolAdaptor>& message, Buffer& buffer) = 0;
+	virtual void visit(FIX::FIX42::Logon<ProtocolAdaptor>& message, Buffer& buffer) = 0;
 
 	virtual ~MessageVisitor(){
 

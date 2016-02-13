@@ -22,11 +22,10 @@ public:
 	typedef boost::shared_ptr<ConvertMessageVisitor> SharedPtr;
 
 	ConvertMessageVisitor(ProtocolAdaptor& adaptor) : _prototcolAdaptor(adaptor) {
-
+		std::cout << " Created ConvertMessageVisitor. " << std::endl;
 	}
 
-	void visit(LogonMessage<ProtocolAdaptor>& message,
-			Buffer& buffer){
+	void visit(FIX::FIX42::Logon<ProtocolAdaptor>& message, Buffer& buffer) {
 		_prototcolAdaptor.convertToBuffer(message, buffer);
 	}
 

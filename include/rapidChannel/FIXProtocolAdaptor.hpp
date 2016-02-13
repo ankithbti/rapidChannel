@@ -9,16 +9,32 @@
 #define INCLUDE_RAPIDCHANNEL_FIXPROTOCOLADAPTOR_HPP_
 
 #include <rapidChannel/Common.hpp>
-#include <rapidChannel/Logon.hpp>
+#include <rapidChannel/FIXLogonMessage.hpp>
+#include <rapidChannel/FIXHeartBeatMessage.hpp>
+#include <rapidChannel/FIXProtocol.hpp>
+#include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
 
 namespace rapidChannel {
 
 class FIXProtocolAdaptor : private boost::noncopyable {
-
 public:
+	typedef boost::shared_ptr<FIXProtocolAdaptor> SharedPtr;
+	FIXProtocolAdaptor(){
+		// To Do - Configs will come here as arguments for FIX Header
+		// like SenderCompId, targetCompId, HeartBeat Interval etc.
+		// Those will be passed to FIXProtocol
+		std::cout << " Created FixProtocolAdaptor. " << std::endl;
+	}
 
-	void convertToBuffer(LogonMessage<FIXProtocolAdaptor>& message, Buffer& buffer);
-	void parseFromBuffer(LogonMessage<FIXProtocolAdaptor>& message, Buffer& buffer);
+	void convertToBuffer(FIX::FIX42::Logon<FIXProtocolAdaptor>& message, Buffer& buffer){
+		std::string str;
+		message.toString(str);
+		std::cout << " Converting the Logon to Buffer : " << str << std::endl;
+	}
+
+	void parseFromBuffer(FIX::FIX42::Logon<FIXProtocolAdaptor>& message, const Buffer& buffer){
+		std::cout << " Converting to Logon from Buffer " << std::endl;
+	}
 
 };
 

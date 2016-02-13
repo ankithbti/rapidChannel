@@ -11,6 +11,7 @@
 #include <rapidChannel/Common.hpp>
 #include <rapidChannel/Message.hpp>
 #include <rapidChannel/ConvertMessageVisitor.hpp>
+#include <rapidChannel/fix/FixField.hpp>
 
 namespace rapidChannel
 {
@@ -30,7 +31,9 @@ public:
 	/**
 	 * @throw: Might throw std::runtime_error
 	 */
-	Channel(){
+	Channel() : _transport(new Transport("127.0.0.1", 5001)),
+	_protocolAdaptor(new ProtocolAdaptor()),
+	_messageVisitor(new ConvertMessageVisitor<ProtocolAdaptor>(*_protocolAdaptor.get())){
 
 	}
 
@@ -56,7 +59,7 @@ public:
 		Buffer buf;
 		msg->apply(*(_messageVisitor.get()), buf);
 		// Send this buf on transport
-		_transport->send(buf);
+		//_transport->send(buf);
 	}
 
 };

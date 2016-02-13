@@ -1,14 +1,24 @@
 #include<iostream>
 #include <rapidChannel/Channel.hpp>
 #include <rapidChannel/TcpClientTransport.hpp>
+#include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
+#include <rapidChannel/FIXProtocolAdaptor.hpp>
 
 const char SOH = '\001';
 using namespace rapidChannel;
 int
 main ()
 {
-  std::cout << " Hello World!! " << std::endl;
   size_t port = 5001;
+
+
+  Channel<TcpClientTransport, FIXProtocolAdaptor> c1;
+  Message<FIXProtocolAdaptor>::SharedPtr fixLogonMsg(new FIX::FIX42::Logon<FIXProtocolAdaptor>());
+  c1.send(fixLogonMsg);
+
+  return 0;
+
+
   TcpClientTransport client ("127.0.0.1", port);
   client.start ();
 

@@ -43,6 +43,7 @@ namespace rapidChannel
 {
 	typedef boost::array<unsigned char, 256> Buffer;
 	typedef boost::shared_ptr<boost::asio::ip::tcp::socket> SocketSharedPtr;
+	typedef std::pair<int, std::string> FixField;
 }
 
 
