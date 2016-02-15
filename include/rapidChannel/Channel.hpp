@@ -12,6 +12,7 @@
 #include <rapidChannel/Message.hpp>
 #include <rapidChannel/ConvertMessageVisitor.hpp>
 #include <rapidChannel/fix/FixField.hpp>
+#include <Setting.hpp>
 
 namespace rapidChannel
 {
@@ -21,20 +22,25 @@ class Channel : private boost::noncopyable
 {
 private:
 	typedef boost::shared_ptr<Channel> SharedPtr;
+	typedef fitiedCoreCpp::appSetting::Setting::SmartPtr SettingSmartPtr;
 
+	SettingSmartPtr _channelSetting;
 	typename Transport::SharedPtr _transport;
 	typename ProtocolAdaptor::SharedPtr _protocolAdaptor;
 	typename MessageVisitor<ProtocolAdaptor>::SharedPtr _messageVisitor;
-	// To Do - Also few Settings will be member variables
 
 public:
 	/**
 	 * @throw: Might throw std::runtime_error
 	 */
-	Channel() : _transport(new Transport("127.0.0.1", 5001)),
-	_protocolAdaptor(new ProtocolAdaptor()),
+	Channel(SettingSmartPtr channelSetting) :
+	_channelSetting(channelSetting),
+	_transport(new Transport("127.0.0.1", 5001)),
+	_protocolAdaptor(new ProtocolAdaptor(_channelSetting)),
 	_messageVisitor(new ConvertMessageVisitor<ProtocolAdaptor>(*_protocolAdaptor.get())){
-
+		// Set some common Header Properties for FIX via config in Channel and then it will send those to Adaptor
+		// Channel can pass these fields to Adaptor - SenderCompID, Target, sendingTime, seqNo, lastRecSeqNo etc.
+		// Adaptor can decide how to use these fields
 	}
 
 	/**

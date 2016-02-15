@@ -5,6 +5,9 @@
 BINARY=../bin/appRapidChannel
 SHARED_LIB=../lib/libRapidChannel.so
 BOOST_BASE=${BOOST_INSTALL_ROOT}
+APP_SETTING_BASE=${APP_SETTING_ROOT}
+TINYXML_BASE=${TINYXML_ROOT}
+APP_LOGGER_BASE=${APP_LOGGER_ROOT}
 
 ARCH = $(shell uname -m)	# ARCH becomes the output from the uname -m command.
 CXX=/usr/bin/g++
@@ -20,11 +23,17 @@ MAIN_OBJ = $(patsubst %.cpp, %.o, $(MAIN_SRC))
 
 INCS = -I../include \
        -I$(BOOST_BASE)/include \
+       -I$(APP_SETTING_BASE)/include \
+       -I$(TINYXML_BASE)/include \
+       -I$(APP_LOGGER_BASE)/include \
 
 LIBS = \
         -L$(BOOST_BASE)/lib -lboost_thread \
         -L$(BOOST_BASE)/lib -lboost_system \
-	-lpthread
+        -L$(APP_SETTING_BASE)/lib -lappSetting \
+        -L$(TINYXML_BASE)/lib -ltinyXml \
+        -L$(APP_LOGGER_BASE)/lib -lappLogger \
+		-lpthread
 
 all: $(BINARY)
 	

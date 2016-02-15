@@ -24,7 +24,6 @@ class Logon : public Message<ProtocolAdaptor>, public FixBaseMessage
 {
 public:
 	Logon(){
-		getMutableHeader().setField(8, "FIX.4.2");
 		getMutableHeader().setField(35, "A");
 	}
 

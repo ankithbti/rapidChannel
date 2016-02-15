@@ -9,21 +9,24 @@
 #define INCLUDE_RAPIDCHANNEL_FIXPROTOCOLADAPTOR_HPP_
 
 #include <rapidChannel/Common.hpp>
-#include <rapidChannel/FIXLogonMessage.hpp>
-#include <rapidChannel/FIXHeartBeatMessage.hpp>
-#include <rapidChannel/FIXProtocol.hpp>
 #include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
+#include <Setting.hpp>
 
 namespace rapidChannel {
 
 class FIXProtocolAdaptor : private boost::noncopyable {
 public:
 	typedef boost::shared_ptr<FIXProtocolAdaptor> SharedPtr;
-	FIXProtocolAdaptor(){
-		// To Do - Configs will come here as arguments for FIX Header
-		// like SenderCompId, targetCompId, HeartBeat Interval etc.
-		// Those will be passed to FIXProtocol
+	typedef fitiedCoreCpp::appSetting::Setting::SmartPtr SettingSmartPtr;
+
+private:
+	SettingSmartPtr _fixSetting;
+public:
+	FIXProtocolAdaptor(SettingSmartPtr setting){
 		std::cout << " Created FixProtocolAdaptor. " << std::endl;
+		// Take out FixSetting out of incoming setting - might be come as Root Setting
+
+
 	}
 
 	void convertToBuffer(FIX::FIX42::Logon<FIXProtocolAdaptor>& message, Buffer& buffer){

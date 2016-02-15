@@ -9,8 +9,6 @@
 #define SRC_MESSAGEVISITOR_HPP_
 
 #include <rapidChannel/Common.hpp>
-#include <rapidChannel/FIXLogonMessage.hpp>
-#include <rapidChannel/FIXHeartBeatMessage.hpp>
 #include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
 
 namespace rapidChannel
