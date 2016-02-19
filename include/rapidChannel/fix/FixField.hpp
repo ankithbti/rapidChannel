@@ -29,11 +29,13 @@ public:
 	FixField(int tag, const std::string& val) :
 		_tag(tag),
 		_value(val),
-		_fixString(boost::lexical_cast<std::string>(_tag) + "=" + _value + '\001'){
+		_fixString(boost::lexical_cast<std::string>(_tag) + "=" + _value + '\001'),
+		_total(0){
 		_length = std::distance(_fixString.begin(), _fixString.end());
 		for(std::string::const_iterator it = _fixString.begin() ; it != _fixString.end() ; ++it){
 			_total += static_cast<unsigned char>(*it);
 		}
+		//std::cout << " Total for tag: " << _fixString << " is " << _total << std::endl;
 	}
 
 	~FixField()

@@ -12,7 +12,7 @@
 
 namespace rapidChannel
 {
-class TcpClientTransport : private boost::noncopyable
+class TcpClientTransport: private boost::noncopyable
 {
 public:
 	typedef boost::shared_ptr<TcpClientTransport> SharedPtr;
@@ -20,8 +20,7 @@ public:
 private:
 
 	std::string _ipAddress;
-	size_t _port;
-	bool _isHBRequired;
+	size_t _port;bool _isHBRequired;
 	size_t _hbInterval;
 	boost::asio::io_service _ioService;
 	boost::asio::io_service::work _ioWork;
@@ -30,7 +29,7 @@ private:
 	boost::shared_ptr<boost::asio::deadline_timer> _hbTimer;
 	boost::mutex _startStopMutex;
 	boost::shared_ptr<boost::thread> _ioServiceThread;
-	Buffer _buffer;
+	Buffer _buffer;bool _isAlive;
 
 	void resolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 	void connect(const boost::system::error_code& err);
@@ -44,13 +43,13 @@ public:
 	TcpClientTransport(const std::string& ip, size_t port, bool isHBReq = false, size_t hbInterval = 30);
 	void start();
 	void stop();
-	inline bool isRunning(){
-	  return false;
+	inline bool isRunning()
+	{
+		boost::unique_lock<boost::mutex> lock(_startStopMutex);
+		return _isAlive;
 	}
 	void send(Buffer& buf);
 };
 }
-
-
 
 #endif /* INCLUDE_RAPIDCHANNEL_TCPCLIENTTRANSPORT_HPP_ */

@@ -64,8 +64,9 @@ public:
 	void send(typename Message<ProtocolAdaptor>::SharedPtr msg){
 		Buffer buf;
 		msg->apply(*(_messageVisitor.get()), buf);
+		std::cout << " Data: " << buf.data() << std::endl;
 		// Send this buf on transport
-		//_transport->send(buf);
+		_transport->send(buf);
 	}
 
 };

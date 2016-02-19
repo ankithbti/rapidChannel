@@ -15,6 +15,7 @@ CXXFLAGS=-g -O2 -std=c++0x -Wall $(INCS)
 
 SRCS = \
 	TcpClientTransport.cpp \
+	SeqNoMemoryMap.cpp \
 
 MAIN_SRC = Main.cpp
 
@@ -30,6 +31,7 @@ INCS = -I../include \
 LIBS = \
         -L$(BOOST_BASE)/lib -lboost_thread \
         -L$(BOOST_BASE)/lib -lboost_system \
+        -L$(BOOST_BASE)/lib -lboost_iostreams \
         -L$(APP_SETTING_BASE)/lib -lappSetting \
         -L$(TINYXML_BASE)/lib -ltinyXml \
         -L$(APP_LOGGER_BASE)/lib -lappLogger \

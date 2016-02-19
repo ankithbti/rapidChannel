@@ -4,6 +4,7 @@
 #include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
 #include <rapidChannel/FIXProtocolAdaptor.hpp>
 #include <XmlSettingParser.hpp>
+#include <rapidChannel/fix/SeqNoMemoryMap.hpp>
 
 const char SOH = '\001';
 
@@ -15,14 +16,22 @@ int main()
 
 	try
 	{
+
 		const std::string configFile("config/appSetting.xml");
 		XmlSettingParser xmlSettingParser(configFile);
 		Setting::SmartPtr rootSetting(xmlSettingParser.getRoot());
-		std::cout << " Root Node: " << rootSetting->getName() << " , isLeaf: " << rootSetting->isLeaf() << std::endl;
 
 		Channel<TcpClientTransport, FIXProtocolAdaptor> c1(rootSetting);
+		c1.start();
 		Message<FIXProtocolAdaptor>::SharedPtr fixLogonMsg(new FIX::FIX42::Logon<FIXProtocolAdaptor>());
 		c1.send(fixLogonMsg);
+
+		while (true)
+		{
+			std::cout << __FILE__ << "::" << __FUNCTION__ << " - Running - Going to sleep. " << std::endl;
+			boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+		}
+
 	} catch (const std::runtime_error& err)
 	{
 		std::cout << " Error: " << err.what() << std::endl;

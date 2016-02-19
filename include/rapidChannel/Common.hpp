@@ -21,6 +21,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time.hpp>
+#include <boost/atomic.hpp>
+#include <boost/iostreams/device/mapped_file.hpp>
 
 #include <boost/fusion/mpl.hpp>
 #include <boost/fusion/container.hpp>
@@ -38,6 +40,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 
 namespace rapidChannel
 {
