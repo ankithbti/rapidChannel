@@ -110,6 +110,12 @@ void TcpClientTransport::asyncRead(const boost::system::error_code& err, std::si
 	{
 		std::cout << __FILE__ << "::" << __FUNCTION__ << " - Read " << bytes_transferred << " bytes sent from client - "
 				<< _buffer.data() << std::endl;
+		std::string data;
+		std::copy(_buffer.begin(), _buffer.begin()+bytes_transferred, std::back_inserter(data));
+		// Send this newBuf to Channel
+		if(_recDataCallback){
+			_recDataCallback(data);
+		}
 		read();
 	}
 	else

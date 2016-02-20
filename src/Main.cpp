@@ -23,6 +23,9 @@ int main()
 
 		Channel<TcpClientTransport, FIXProtocolAdaptor> c1(rootSetting);
 		c1.start();
+
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+
 		Message<FIXProtocolAdaptor>::SharedPtr fixLogonMsg(new FIX::FIX42::Logon<FIXProtocolAdaptor>());
 		c1.send(fixLogonMsg);
 

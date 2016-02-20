@@ -20,10 +20,19 @@ class MessageVisitor;
 template<typename ProtocolAdaptor>
 class Message : private boost::noncopyable
 {
+private:
+	const std::string& _msgType;
 public:
 	typedef boost::shared_ptr<Message<ProtocolAdaptor> > SharedPtr;
 
+	Message(const std::string& msgType) : _msgType(msgType){
+	}
+
 	virtual void apply(MessageVisitor<ProtocolAdaptor>& visitor, Buffer& buffer) = 0;
+
+	virtual std::string getMessageId() const{
+		return _msgType;
+	}
 
 	virtual ~Message(){
 

@@ -15,7 +15,7 @@
 namespace rapidChannel
 {
 template<typename ProtocolAdaptor>
-class ParseMessageVisitor : public MessageVisitor<ProtocolAdaptor>
+class ParseMessageVisitor: public MessageVisitor<ProtocolAdaptor>
 {
 private:
 	ProtocolAdaptor& _prototcolAdaptor;
@@ -30,11 +30,14 @@ public:
 
 	void visit(FIX::FIX42::Logon<ProtocolAdaptor>& message, Buffer& buffer)
 	{
-		_prototcolAdaptor.parseFromBuffer(message, buffer);F
+		_prototcolAdaptor.parseFromBuffer(message, buffer);
 	}
-}
-}
-;
+
+	void visit(FIX::FIX42::HeartBeat<ProtocolAdaptor>& message, Buffer& buffer)
+	{
+		_prototcolAdaptor.parseFromBuffer(message, buffer);
+	}
+};
 }
 
 #endif /* INCLUDE_RAPIDCHANNEL_PARSEMESSAGEVISITOR_HPP_ */

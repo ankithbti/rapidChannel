@@ -23,6 +23,7 @@
 #include <boost/date_time.hpp>
 #include <boost/atomic.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
+#include <boost/function.hpp>
 
 #include <boost/fusion/mpl.hpp>
 #include <boost/fusion/container.hpp>

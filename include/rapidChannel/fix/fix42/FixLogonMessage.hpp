@@ -23,13 +23,14 @@ template<typename ProtocolAdaptor>
 class Logon : public Message<ProtocolAdaptor>, public FixBaseMessage
 {
 public:
-	Logon(){
+	Logon() : Message<ProtocolAdaptor>("A"){
 		getMutableHeader().setField(35, "A");
 	}
 
 	void apply(MessageVisitor<ProtocolAdaptor>& visitor, Buffer& buffer) {
 		visitor.visit(*this, buffer);
 	}
+
 };
 }
 }

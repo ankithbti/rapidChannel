@@ -11,21 +11,31 @@
 #include <rapidChannel/Common.hpp>
 #include <rapidChannel/MessageVisitor.hpp>
 
-namespace rapidChannel {
+namespace rapidChannel
+{
 
-template< typename ProtocolAdaptor>
-class ConvertMessageVisitor: public MessageVisitor<ProtocolAdaptor> {
+template<typename ProtocolAdaptor>
+class ConvertMessageVisitor: public MessageVisitor<ProtocolAdaptor>
+{
 private:
 	ProtocolAdaptor& _prototcolAdaptor;
 public:
 
 	typedef boost::shared_ptr<ConvertMessageVisitor> SharedPtr;
 
-	ConvertMessageVisitor(ProtocolAdaptor& adaptor) : _prototcolAdaptor(adaptor) {
+	ConvertMessageVisitor(ProtocolAdaptor& adaptor) :
+			_prototcolAdaptor(adaptor)
+	{
 		std::cout << " Created ConvertMessageVisitor. " << std::endl;
 	}
 
-	void visit(FIX::FIX42::Logon<ProtocolAdaptor>& message, Buffer& buffer) {
+	void visit(FIX::FIX42::Logon<ProtocolAdaptor>& message, Buffer& buffer)
+	{
+		_prototcolAdaptor.convertToBuffer(message, buffer);
+	}
+
+	void visit(FIX::FIX42::HeartBeat<ProtocolAdaptor>& message, Buffer& buffer)
+	{
 		_prototcolAdaptor.convertToBuffer(message, buffer);
 	}
 

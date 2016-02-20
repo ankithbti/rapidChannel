@@ -17,6 +17,11 @@ class TcpClientTransport: private boost::noncopyable
 public:
 	typedef boost::shared_ptr<TcpClientTransport> SharedPtr;
 
+	typedef boost::function<void(const std::string&, const std::string&)> OnErrorCallback;
+	typedef boost::function<void(const std::string&)> OnConnectCallback;
+	typedef boost::function<void(const std::string&)> OnDisconnectCallback;
+	typedef boost::function<void(const std::string&)> OnDataRecCallback;
+
 private:
 
 	std::string _ipAddress;
@@ -30,6 +35,8 @@ private:
 	boost::mutex _startStopMutex;
 	boost::shared_ptr<boost::thread> _ioServiceThread;
 	Buffer _buffer;bool _isAlive;
+
+	OnDataRecCallback _recDataCallback;
 
 	void resolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 	void connect(const boost::system::error_code& err);
@@ -48,6 +55,12 @@ public:
 		boost::unique_lock<boost::mutex> lock(_startStopMutex);
 		return _isAlive;
 	}
+
+	void setDataRecCallback(OnDataRecCallback cb)
+	{
+		_recDataCallback = cb;
+	}
+
 	void send(Buffer& buf);
 };
 }

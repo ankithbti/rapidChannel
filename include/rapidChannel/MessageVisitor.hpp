@@ -10,6 +10,7 @@
 
 #include <rapidChannel/Common.hpp>
 #include <rapidChannel/fix/fix42/FixLogonMessage.hpp>
+#include <rapidChannel/fix/fix42/FixHBMessage.hpp>
 
 namespace rapidChannel
 {
@@ -21,6 +22,7 @@ public:
 	typedef boost::shared_ptr<MessageVisitor<ProtocolAdaptor> > SharedPtr;
 
 	virtual void visit(FIX::FIX42::Logon<ProtocolAdaptor>& message, Buffer& buffer) = 0;
+	virtual void visit(FIX::FIX42::HeartBeat<ProtocolAdaptor>& message, Buffer& buffer) = 0;
 
 	virtual ~MessageVisitor(){
 

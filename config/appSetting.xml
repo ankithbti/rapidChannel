@@ -1,0 +1,15 @@
+<channelSetting>
+	<fixSetting>
+		<fixLogStore path-prefix="log" delimeter="">
+		</fixLogStore>
+		<fixDefaultSetting path-prefix="store" beginSeqNo="1" resetSeqNo="Y" heartBtInt="5" encryptType="0">
+		</fixDefaultSetting> 
+		<fixHeader>
+			<field tag="8" value="FIX.4.2" ref="BeginString"></field>
+			<field tag="49" value="CLIENT1" ref="SenderCompID"></field>
+			<field tag="56" value="EXECUTOR" ref="TargetCompID"></field>
+		</fixHeader>
+		<fixMessage type="A">
+		</fixMessage>
+	</fixSetting>
+</channelSetting>
