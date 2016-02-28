@@ -97,7 +97,8 @@ int main()
 
 	std::string fixMsg = logonHeaderPart1.str();
 	Buffer b;
-	std::copy(fixMsg.begin(), fixMsg.end(), b.data());
+	b = fixMsg;
+	//std::copy(fixMsg.begin(), fixMsg.end(), b.data());
 
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 

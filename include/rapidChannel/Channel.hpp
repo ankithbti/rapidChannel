@@ -52,18 +52,23 @@ public:
 		_protocolAdaptor->deserialise(buf);
 	}
 
+	void onMessageReceived(typename Message<ProtocolAdaptor>::SharedPtr msg, const std::string& type){
+		std::cout << " Channel onMsg Rec: " << std::endl;
+	}
+
 	/**
 	 * @throw: Might throw std::runtime_error
 	 */
 	Channel(SettingSmartPtr channelSetting, ChannelCallbackContainer callabcks = ChannelCallbackContainer()) :
-			_channelSetting(channelSetting), _transport(new Transport("127.0.0.1", 5001)), _protocolAdaptor(
-					new ProtocolAdaptor(_channelSetting)), _messageVisitor(
-					new ConvertMessageVisitor<ProtocolAdaptor>(*_protocolAdaptor.get())), _callbacks(callabcks)
+		_channelSetting(channelSetting), _transport(new Transport("127.0.0.1", 5001)), _protocolAdaptor(
+				new ProtocolAdaptor(_channelSetting)), _messageVisitor(
+						new ConvertMessageVisitor<ProtocolAdaptor>(*_protocolAdaptor.get())), _callbacks(callabcks)
 	{
 		// Set some common Header Properties for FIX via config in Channel and then it will send those to Adaptor
 		// Channel can pass these fields to Adaptor - SenderCompID, Target, sendingTime, seqNo, lastRecSeqNo etc.
 		// Adaptor can decide how to use these fields
 		_protocolAdaptor->setSendMessageCallback(boost::bind(&Channel::send, this, _1));
+		_protocolAdaptor->setReceivedMessageCallback(boost::bind(&Channel::onMessageReceived, this, _1, _2));
 		_transport->setDataRecCallback(boost::bind(&Channel::onDataRec, this, _1));
 	}
 

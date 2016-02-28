@@ -57,6 +57,7 @@ void TcpClientTransport::send(Buffer& buf)
 {
 	if (isRunning())
 	{
+		//std::string str;
 		boost::asio::async_write(*(_socket.get()), boost::asio::buffer(buf),
 				boost::bind(&TcpClientTransport::asyncWrite, this, _1, _2));
 	}else{

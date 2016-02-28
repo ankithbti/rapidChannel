@@ -23,6 +23,8 @@ template<typename ProtocolAdaptor>
 class Logon : public Message<ProtocolAdaptor>, public FixBaseMessage
 {
 public:
+	typedef boost::shared_ptr<Logon> SharedPtr;
+
 	Logon() : Message<ProtocolAdaptor>("A"){
 		getMutableHeader().setField(35, "A");
 	}

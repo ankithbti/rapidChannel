@@ -25,18 +25,18 @@ class FixHeader: public FieldMap
 {
 public:
 	FixHeader() :
-			FieldMap(FixFieldSorter(FixFieldSorter::header))
-	{
-	}
+		FieldMap(FixFieldSorter(FixFieldSorter::header))
+{
+}
 };
 
 class FixTrailer: public FieldMap
 {
 public:
 	FixTrailer() :
-			FieldMap(FixFieldSorter(FixFieldSorter::trailer))
-	{
-	}
+		FieldMap(FixFieldSorter(FixFieldSorter::trailer))
+{
+}
 };
 
 class FixBaseMessage: public FieldMap
@@ -55,7 +55,7 @@ protected:
 	FixTrailer _footer;bool _isValidMessage;
 
 	FixBaseMessage(const std::string& beginString, const std::string& msgType) :
-			_isValidMessage(true)
+		_isValidMessage(true)
 	{
 		_header.setField(8, beginString);
 		_header.setField(35, msgType);
@@ -63,14 +63,25 @@ protected:
 
 public:
 	FixBaseMessage() :
-			_isValidMessage(true)
-	{
+		_isValidMessage(true)
+{
 
-	}
+}
 
 	FixBaseMessage(const std::string& str, bool validate = true)
 	{
 		setString(str);
+	}
+
+	void printMsg(std::string& str){
+		_header.getFixString(str);
+		getFixString(str);
+		_footer.getFixString(str);
+		for (int i = 0; i < str.length(); ++i)
+		{
+			if (str[i] == '\001')
+				str[i] = '|';
+		}
 	}
 
 	void toString(std::string& str, int beginString = 8, int bodylen = 9, int cs = 10)

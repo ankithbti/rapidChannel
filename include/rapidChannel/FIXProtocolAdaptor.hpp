@@ -21,7 +21,8 @@ class FIXProtocolAdaptor: private boost::noncopyable
 {
 public:
 	typedef boost::shared_ptr<FIXProtocolAdaptor> SharedPtr;
-	typedef boost::function<void(Message<FIXProtocolAdaptor>::SharedPtr)> SendMessageCallback;
+	typedef boost::function<void(Message<FIXProtocolAdaptor>::SharedPtr)> MessageCallback;
+	typedef boost::function<void(Message<FIXProtocolAdaptor>::SharedPtr, const std::string&)> RecMessageCallback;
 	typedef fitiedCoreCpp::appSetting::Setting::SmartPtr SettingSmartPtr;
 	typedef std::pair<fitiedCoreCpp::appSetting::Setting::ChildrenListConstIt,
 			fitiedCoreCpp::appSetting::Setting::ChildrenListConstIt> SettingChildernBeginEndItPair;
@@ -38,7 +39,8 @@ private:
 	int _beginSeqNo;bool _resetSeqNo;
 	std::string _hbInterval;
 	std::string _encryptType;
-	SendMessageCallback _sendMsgCallback;
+	MessageCallback _sendMsgCallback;
+	RecMessageCallback _recMessageCallback;
 	boost::asio::io_service _ioService;
 	HBTimer _hbTimer;
 	boost::shared_ptr<boost::thread> _ioServiceRunThread;
@@ -85,8 +87,8 @@ public:
 		}
 	}
 	FIXProtocolAdaptor(SettingSmartPtr setting) :
-			_beginSeqNo(0), _resetSeqNo(0), _ioService(), _hbTimer(new boost::asio::deadline_timer(_ioService)), _ioWork(
-					_ioService)
+		_beginSeqNo(0), _resetSeqNo(0), _ioService(), _hbTimer(new boost::asio::deadline_timer(_ioService)), _ioWork(
+				_ioService)
 
 	{
 		std::cout << " Created FixProtocolAdaptor. " << std::endl;
@@ -178,12 +180,12 @@ public:
 			throw std::runtime_error(
 					std::string(
 							" Failed to read mandatory header fields from setting. Caught bad_lexical_cast exception: ")
-							+ err.what());
+			+ err.what());
 		} catch (const std::runtime_error& err)
 		{
 			throw std::runtime_error(
 					std::string(" Failed to read mandatory header fields from setting. Caught generic exception: ")
-							+ err.what());
+			+ err.what());
 		}
 
 		if (_fixVersion.empty() || _senderCompId.empty() || _targetCompId.empty())
@@ -222,9 +224,13 @@ public:
 
 	}
 
-	void setSendMessageCallback(SendMessageCallback cb)
+	void setSendMessageCallback(MessageCallback cb)
 	{
 		_sendMsgCallback = cb;
+	}
+
+	void setReceivedMessageCallback(RecMessageCallback cb){
+		_recMessageCallback = cb;
 	}
 
 	void convertToBuffer(FIX::FIX42::Logon<FIXProtocolAdaptor>& message, Buffer& buffer)
@@ -310,7 +316,9 @@ public:
 		message.toString(str);
 
 		// Fill the Buffer
-		std::copy(str.begin(), str.end(), buffer.data());
+		//std::copy(str.begin(), str.end(), buffer.data());
+
+		buffer = str;
 
 		_senderSeqNo->incrementAndGetSeqNo();
 
@@ -405,8 +413,8 @@ public:
 		message.toString(str);
 
 		// Fill the Buffer
-		std::copy(str.begin(), str.end(), buffer.data());
-
+		//std::copy(str.begin(), str.end(), buffer.data());
+		buffer = str;
 		_senderSeqNo->incrementAndGetSeqNo();
 
 	}
@@ -418,13 +426,93 @@ public:
 		// If any message received then reset and start the HBTimer Thread
 	}
 
-	void deserialise(const std::string& buf){
+	void deserialise(const std::string& buf)
+	{
 		// Deserialise as per FIX protocol
-//		8=<NeginString>[\001]9=<Length>[].....10=<CS>[]
+		//		8=<NeginString>[\001]9=<Length>[].....10=<CS>[]
 
+		std::string tmpBuf = buf;
+		for (int i = 0; i < tmpBuf.length(); ++i)
+		{
+			if (tmpBuf[i] == '\001')
+				tmpBuf[i] = '|';
+		}
+
+		std::cout << " Incoming message: " << tmpBuf << std::endl;
 		//Check if complete or not.....
-		std::cout << " FIXPA - Data: " << buf << std::endl;
+		_remBuffer += buf;
 
+		int count = 0;
+		std::string beginStr;
+		int msgLen;
+		std::string msgType;
+		std::string::size_type msgEndPos = 0;
+		for (; _remBuffer.size() > 0;)
+		{
+			++count;
+			if (count > 3)
+			{
+				break;
+			}
+			std::string::size_type pos = _remBuffer.find_first_of('\001');
+			std::string fixFieldStr = _remBuffer.substr(0, pos);
+			std::string::size_type delimPos;
+			switch (count)
+			{
+			case 1:
+				// BeginString
+				delimPos = fixFieldStr.find('=');
+				beginStr = fixFieldStr.substr(delimPos + 1);
+				msgEndPos += pos + 1;
+				break;
+			case 2:
+				// Bodylength
+			{
+				delimPos = fixFieldStr.find('=');
+				int len = boost::lexical_cast<int>(fixFieldStr.substr(delimPos + 1));
+				msgEndPos += pos + 1 + len + 2;
+				msgEndPos += buf.substr(msgEndPos + 1).find_first_of('\001') + 1;
+			}
+			break;
+			case 3:
+			{
+				// MsgType
+				delimPos = fixFieldStr.find('=');
+				msgType = fixFieldStr.substr(delimPos + 1);
+			}
+			break;
+			default:
+
+				break;
+			}
+			_remBuffer = _remBuffer.substr(pos + 1);
+		}
+		_remBuffer = buf.substr(msgEndPos+1);
+		if(_remBuffer.size() == 0 ){
+			_remBuffer.clear();
+		}
+
+		std::cout << " Incoming message2: " << tmpBuf << std::endl;
+		std::cout << " deserialise: beginStr: " << beginStr << std::endl;
+		std::cout << " deserialise: msgType: " << msgType << std::endl;
+
+		if(boost::iequals("A", msgType)){
+			FIX::FIX42::Logon<FIXProtocolAdaptor>::SharedPtr logonMsg(new FIX::FIX42::Logon<FIXProtocolAdaptor>());
+			logonMsg->setString(buf.substr(0, msgEndPos+1));
+			std::string msg;
+
+			logonMsg->printMsg(msg);
+			std::cout << " LogonMessage: " << msg << std::endl;
+			_recMessageCallback(logonMsg, msgType);
+
+		}else if(boost::iequals("0", msgType)){
+			FIX::FIX42::HeartBeat<FIXProtocolAdaptor>::SharedPtr hbMsg(new FIX::FIX42::HeartBeat<FIXProtocolAdaptor>());
+			hbMsg->setString(buf.substr(0, msgEndPos+1));
+			std::string msg;
+			hbMsg->printMsg(msg);
+			std::cout << " HBMessage: " << msg << std::endl;
+			_recMessageCallback(hbMsg, msgType);
+		}
 	}
 
 private:

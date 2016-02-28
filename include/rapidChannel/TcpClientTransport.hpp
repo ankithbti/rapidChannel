@@ -34,7 +34,8 @@ private:
 	boost::shared_ptr<boost::asio::deadline_timer> _hbTimer;
 	boost::mutex _startStopMutex;
 	boost::shared_ptr<boost::thread> _ioServiceThread;
-	Buffer _buffer;bool _isAlive;
+	boost::array<unsigned char, 256> _buffer;
+	bool _isAlive;
 
 	OnDataRecCallback _recDataCallback;
 
