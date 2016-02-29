@@ -432,11 +432,8 @@ public:
 		//		8=<NeginString>[\001]9=<Length>[].....10=<CS>[]
 
 		std::string tmpBuf = buf;
-		for (int i = 0; i < tmpBuf.length(); ++i)
-		{
-			if (tmpBuf[i] == '\001')
-				tmpBuf[i] = '|';
-		}
+		std::transform(tmpBuf.begin(), tmpBuf.end(), tmpBuf.begin(),
+				[](unsigned char ch){ if(ch == '\001'){ ch = '|' ; return ch ; }else{ return ch ; } });
 
 		std::cout << " Incoming message: " << tmpBuf << std::endl;
 		//Check if complete or not.....

@@ -24,7 +24,8 @@ public:
 	typedef boost::shared_ptr<Channel> SharedPtr;
 	typedef boost::variant<boost::function<void(const std::string&, const std::string&)>,
 			boost::function<void(const std::string&)>,
-			boost::function<void(typename Message<ProtocolAdaptor>::SharedPtr)> > ChannelCallback;
+			boost::function<void(typename Message<ProtocolAdaptor>::SharedPtr)>,
+			boost::function<void(typename Message<ProtocolAdaptor>::SharedPtr, const std::string&)> > ChannelCallback;
 
 	enum CallbackType
 	{
@@ -54,6 +55,10 @@ public:
 
 	void onMessageReceived(typename Message<ProtocolAdaptor>::SharedPtr msg, const std::string& type){
 		std::cout << " Channel onMsg Rec: " << std::endl;
+		ChannelCallbackContainerConstIt it = _callbacks.find(OnMessage);
+		if(it != _callbacks.end()){
+			(boost::get<boost::function<void(typename Message<ProtocolAdaptor>::SharedPtr, const std::string&)> >(it->second))(msg, type);
+		}
 	}
 
 	/**

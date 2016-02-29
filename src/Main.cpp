@@ -10,6 +10,14 @@ const char SOH = '\001';
 
 using namespace rapidChannel;
 using namespace fitiedCoreCpp::appSetting;
+
+typedef Channel<TcpClientTransport, FIXProtocolAdaptor> ChannelType;
+typedef ChannelType::ChannelCallbackContainer CBMap;
+
+void onMessage(Message<FIXProtocolAdaptor>::SharedPtr msg, const std::string& type){
+	std::cout << " Got Message from Channel of Type: " << type << std::endl;
+}
+
 int main()
 {
 	size_t port = 5001;
@@ -21,7 +29,10 @@ int main()
 		XmlSettingParser xmlSettingParser(configFile);
 		Setting::SmartPtr rootSetting(xmlSettingParser.getRoot());
 
-		Channel<TcpClientTransport, FIXProtocolAdaptor> c1(rootSetting);
+		CBMap cbContainer;
+		boost::function<void(typename Message<FIXProtocolAdaptor>::SharedPtr, const std::string&)> onMsgRec = boost::bind(&onMessage, _1, _2);
+		cbContainer.insert(CBMap::value_type(ChannelType::OnMessage, onMsgRec));
+		Channel<TcpClientTransport, FIXProtocolAdaptor> c1(rootSetting, cbContainer);
 		c1.start();
 
 		boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
