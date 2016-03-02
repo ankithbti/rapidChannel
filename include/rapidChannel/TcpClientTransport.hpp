@@ -38,6 +38,9 @@ private:
 	bool _isAlive;
 
 	OnDataRecCallback _recDataCallback;
+	OnConnectCallback _onConnectCallback;
+	OnDisconnectCallback _onDisconnectCallback;
+	OnErrorCallback _onErrorCallback;
 
 	void resolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpoint_iterator);
 	void connect(const boost::system::error_code& err);
@@ -60,6 +63,21 @@ public:
 	void setDataRecCallback(OnDataRecCallback cb)
 	{
 		_recDataCallback = cb;
+	}
+
+	void setOnConnectCallback(OnConnectCallback cb)
+	{
+		_onConnectCallback = cb;
+	}
+
+	void setOnDisconnectCallback(OnDisconnectCallback cb)
+	{
+		_onDisconnectCallback = cb;
+	}
+
+	void onErrorCallback(OnErrorCallback cb)
+	{
+		_onErrorCallback = cb;
 	}
 
 	void send(Buffer& buf);

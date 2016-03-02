@@ -23,10 +23,12 @@ public:
 	typedef boost::shared_ptr<FIXProtocolAdaptor> SharedPtr;
 	typedef boost::function<void(Message<FIXProtocolAdaptor>::SharedPtr)> MessageCallback;
 	typedef boost::function<void(Message<FIXProtocolAdaptor>::SharedPtr, const std::string&)> RecMessageCallback;
+	typedef boost::function<void(const std::string&, const std::string&)> ErrorCallback;
 	typedef fitiedCoreCpp::appSetting::Setting::SmartPtr SettingSmartPtr;
 	typedef std::pair<fitiedCoreCpp::appSetting::Setting::ChildrenListConstIt,
 			fitiedCoreCpp::appSetting::Setting::ChildrenListConstIt> SettingChildernBeginEndItPair;
 	typedef boost::shared_ptr<boost::asio::deadline_timer> HBTimer;
+	typedef std::queue<std::string> DataQ;
 private:
 	SettingSmartPtr _fixSetting;
 	std::string _senderCompId;
@@ -41,6 +43,7 @@ private:
 	std::string _encryptType;
 	MessageCallback _sendMsgCallback;
 	RecMessageCallback _recMessageCallback;
+	ErrorCallback _errorCallback;
 	boost::asio::io_service _ioService;
 	HBTimer _hbTimer;
 	boost::shared_ptr<boost::thread> _ioServiceRunThread;
@@ -227,6 +230,12 @@ public:
 	void setSendMessageCallback(MessageCallback cb)
 	{
 		_sendMsgCallback = cb;
+	}
+
+
+	void setOnErrorCallback(ErrorCallback cb)
+	{
+		_errorCallback = cb;
 	}
 
 	void setReceivedMessageCallback(RecMessageCallback cb){

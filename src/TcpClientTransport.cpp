@@ -10,9 +10,9 @@
 namespace rapidChannel
 {
 TcpClientTransport::TcpClientTransport(const std::string& ip, size_t port,
-bool isHBReq, size_t hbInterval) :
-		_ipAddress(ip), _port(port), _isHBRequired(isHBReq), _hbInterval(hbInterval), _ioService(), _ioWork(_ioService), _resolver(
-				_ioService), _socket(new boost::asio::ip::tcp::socket(_ioService)), _isAlive(false)
+		bool isHBReq, size_t hbInterval) :
+				_ipAddress(ip), _port(port), _isHBRequired(isHBReq), _hbInterval(hbInterval), _ioService(), _ioWork(_ioService), _resolver(
+						_ioService), _socket(new boost::asio::ip::tcp::socket(_ioService)), _isAlive(false)
 {
 	std::cout << __FILE__ << "::" << __FUNCTION__ << " - Constructed Transport for " << _ipAddress << ":" << _port
 			<< std::endl;
@@ -90,13 +90,16 @@ void TcpClientTransport::connect(const boost::system::error_code& err)
 		std::cout << __FILE__ << "::" << __FUNCTION__ << " - Connection Successful to " << std::endl;
 
 		// To Do - Call the Channel Callback that Connection is Successful
-
+		std::string id = _ipAddress + ":" + boost::lexical_cast<std::string>(_port);
+		_onConnectCallback(id);
 		// Start Reading Part
 		read();
 	}
 	else
 	{
 		std::cout << __FILE__ << "::" << __FUNCTION__ << " - Error: " << err.message() << std::endl;
+		std::string id = _ipAddress + ":" + boost::lexical_cast<std::string>(_port);
+		_onErrorCallback(id, boost::lexical_cast<std::string>(err.message()));
 	}
 }
 
@@ -128,6 +131,8 @@ void TcpClientTransport::asyncRead(const boost::system::error_code& err, std::si
 		else
 		{
 			std::cout << __FILE__ << "::" << __FUNCTION__ << " - Error: " << err.message() << std::endl;
+			std::string id = _ipAddress + ":" + boost::lexical_cast<std::string>(_port);
+			_onErrorCallback(id, boost::lexical_cast<std::string>(err.message()));
 		}
 	}
 }
